@@ -2,7 +2,7 @@
 # File: P1.py
 #
 # Created: 31-10-2016 by Hamid Bazargani <hamidb@google.com>
-# Last Modified: Tue Nov  1 17:42:18 2016
+# Last Modified: Tue Nov  1 23:09:32 2016
 #
 # Description:
 #
@@ -27,6 +27,8 @@ import fnmatch
 # Import everything needed to edit/save/watch video clips
 from moviepy.editor import VideoFileClip
 from IPython.display import HTML
+
+imshape = (0, 0, 0)
 
 canny_low_threshold = 50
 canny_high_threshold = 150
@@ -53,6 +55,12 @@ offset_from_bottom = 0
 trapezoid_height_ratio = 0.4
 trapezoid_width_ratio1 = 1
 trapezoid_width_ratio2 = 0.1
+
+# Normal masking algorithm
+lower_yellow = np.array([0, 65, 155])
+upper_yellow = np.array([179, 255, 255])
+lower_white = np.array([0, 0, 220])
+upper_white = np.array([179, 255, 255])
 
 def grayscale(img):
     """Applies the Grayscale transform
@@ -120,7 +128,7 @@ def fit_line_LSE(points):
     point_mean = np.mean(np.array(points), axis = 0)[0]
     point_max = np.max(np.array(points), axis=0)[0]
     point_min = np.min(np.array(points), axis=0)[0]
-    y_max = max(point_max[1], point_max[3])
+    y_max = imshape[0] #max(point_max[1], point_max[3])
     y_min = min(point_min[1], point_min[3])
     x_mean = (point_mean[0] + point_mean[2]) / 2
     y_mean = (point_mean[1] + point_mean[3]) / 2
@@ -224,14 +232,25 @@ def process_image(image):
     # TODO: put your pipeline here,
     # you should return the final output (image with lines are drawn on lanes)
 
+    global imshape
     imshape = image.shape
 
     # Convert BGR to HSV
+    # HSV color space is more robust to light luminance
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-    # convert color
-    # HSV color space is more robust to light luminance
     gray = hsv[:, :, 2]
+
+    # Color threshold to retain yellow and white
+    # Also make it more robust against light condition
+    mask_yellow = cv2.inRange(hsv, lower_yellow, upper_yellow)
+    mask_white = cv2.inRange(hsv, lower_white, upper_white)
+    gray_white = cv2.bitwise_and(gray, gray, mask = mask_white)
+    gray_yellow = cv2.bitwise_and(gray, gray, mask = mask_yellow)
+    gray = gray_yellow + gray_white
+
+    # dilate to make lines look thicker
+    gray = cv2.dilate(gray, np.ones((11, 11)))
 
     # smooth image
     blur = gaussian_blur(gray, blur_kernel_size)
@@ -254,7 +273,6 @@ def process_image(image):
 
     line_img = hough_lines(masked_edges, rho, theta, threshold, min_line_length, max_line_gap)
     # cv2.polylines(line_img, vertices, 1, [255, 255, 0], 2)
-
     line_img = weighted_img(line_img, image)
 
     return line_img
