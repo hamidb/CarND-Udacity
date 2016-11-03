@@ -2,7 +2,7 @@
 # File: P1.py
 #
 # Created: 31-10-2016 by Hamid Bazargani <hamidb@google.com>
-# Last Modified: Wed Nov  2 12:05:58 2016
+# Last Modified: Thu Nov  3 01:31:04 2016
 #
 # Description:
 #
@@ -38,7 +38,7 @@ blur_kernel_size = 5
 rho = 1               # distance resolution in pixels of the Hough grid
 theta = 1*np.pi/180   # angular resolution in radians of the Hough grid
 threshold = 30        # minimum number of votes (intersections in Hough grid cell)
-min_line_length = 10  # minimum number of pixels making up a line
+min_line_length = 50  # minimum number of pixels making up a line
 max_line_gap = 150    # maximum gap in pixels between connectable line segments
 
 filter_threshold_low = 25   # degree
