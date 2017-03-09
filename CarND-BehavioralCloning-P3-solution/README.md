@@ -41,6 +41,7 @@ In addition we reserved an option to resize each frame in order to bring down th
 The bellow figure, represents 6 different kinds of our augmentation:
 
 ![Augmentation](img1.png)
+
 Since we will give a 3-channel input to the network, there is no need for BGR to RGB conversion.
 
 # Batch generator
