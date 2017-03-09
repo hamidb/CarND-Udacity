@@ -56,7 +56,7 @@ Compile and train the network for 3 epochs. We used [`Adam`](https://keras.io/mo
 ```
 lr=1e-4, beta_1=0.9, beta_2=0.999, epsilon=1e-08, decay=0.0
 ```
-We then used Keras's `.fit_generator()` method to have batch training with batch size of 64 sampes.
+We then used Keras's `.fit_generator()` method to have batch training with batch size of 128 samples.
 
 ## Testing
 Testing can be performed by running `drive.py` script given saved h5 files as follows:
